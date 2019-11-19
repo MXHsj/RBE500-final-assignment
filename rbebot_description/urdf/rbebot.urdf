@@ -1,0 +1,285 @@
+<?xml version="1.0"?>
+<robot name="rbebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Controller Stuff -->
+  <gazebo>
+      <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+        <robotNamespace>/custom_scara</robotNamespace>
+        <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      </plugin>
+  </gazebo>
+
+  <link name="world"/>
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <!-- Define base_link -->
+  <link name="base_link">
+    <collision>
+      <geometry>
+        <cylinder length="0.5" radius="0.2"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.5" radius="0.2"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- Define joint1 -->
+  <joint name="joint1" type="continuous">
+    <parent link="base_link"/>
+    <child link="link1_1"/>
+    <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10" friction="10.0"/>
+    <limit effort="100.0" velocity="0.1"/>
+    <!-- Controller Stuff -->
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+
+  <!-- Define first half of link1 -->
+  <link name="link1_1">
+    <collision>
+      <geometry>
+        <box size="0.15 0.15 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.15 0.15 0.5"/>
+      </geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Define joint that connects first and second half of link1 -->
+  <joint name="joint1_1" type="fixed">
+    <parent link="link1_1"/>
+    <child link="link1_2"/>
+  </joint>
+
+  <!-- Define second half of link1 -->
+  <link name="link1_2">
+    <collision>
+      <geometry>
+        <box size="0.5 0.15 0.15"/>
+      </geometry>
+      <origin xyz="0.175 0 0.5" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.5 0.15 0.15"/>
+      </geometry>
+      <origin xyz="0.175 0 0.5" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Define joint2 -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1_2"/>
+    <child link="link2"/>
+    <origin xyz="0.5 0 0.5" rpy="0 0 0"/>
+    <limit effort="1000.0" lower="-2.09" upper="2.09" velocity="0.5"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10" friction="10.0"/>
+    <!-- Controller Stuff -->
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+
+  <!-- Define link2 -->
+  <link name="link2">
+    <collision>
+      <geometry>
+        <cylinder length="0.25" radius="0.1"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <cylinder length="0.25" radius="0.1"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="link2">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- Define joint2_1 -->
+  <joint name="joint2_1" type="fixed">
+    <parent link="link2"/>
+    <child link="link3"/>
+  </joint>
+
+  <!-- Define link3 -->
+  <link name="link3">
+    <collision>
+      <geometry>
+        <box size="0.5 0.15 0.15"/>
+      </geometry>
+      <origin xyz="0.25 0 0" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.5 0.1 0.1"/>
+      </geometry>
+      <origin xyz="0.25 0 0" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Define joint2_2 -->
+  <joint name="joint2_2" type="fixed">
+    <parent link="link3"/>
+    <child link="link3_1"/>
+  </joint>
+
+  <!-- Define link3_1 -->
+  <link name="link3_1">
+    <collision>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <origin xyz="0.5 0 0" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.2 0.2 0.2"/>
+      </geometry>
+      <origin xyz="0.5 0 0" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="link3_1">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <!-- Define joint3 -->
+  <joint name="joint3" type="prismatic">
+    <parent link="link3_1"/>
+    <child link="link4"/>
+    <origin xyz="0.5 0 0" rpy="0 0 0"/>
+    <limit effort="100.0" lower="-0.35" upper="0.35" velocity="0.5"/>
+    <axis xyz="0 0 1"/>
+    <dynamics damping="10" friction="10.0"/>
+    <!-- Controller Stuff -->
+    <hardwareInterface>EffortJointInterface</hardwareInterface>
+  </joint>
+
+  <!-- Define link4 -->
+  <link name="link4">
+    <collision>
+      <geometry>
+        <box size="0.15 0.15 0.8"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </collision>
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.8"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+
+  <!-- Controller Stuff -->
+  <transmission name="tran1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor1">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor2">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran3">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="joint3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor3">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>
