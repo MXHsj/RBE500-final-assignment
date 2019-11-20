@@ -104,10 +104,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES rbe500fp_part1
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  #INCLUDE_DIRS include
+  LIBRARIES rbe500fp_part1
+  CATKIN_DEPENDS roscpp rospy std_msgs
+  DEPENDS system_lib
 )
 
 ###########
@@ -117,7 +117,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+ include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -208,12 +208,20 @@ include_directories(
 
 add_executable(SCARAFK_server src/SCARAFK_server.cpp)
 target_link_libraries(SCARAFK_server ${catkin_LIBRARIES})
+add_dependencies(SCARAFK_server rbe500fp_part1_gencpp)
 
 add_executable(SCARAFK_client src/SCARAFK_client.cpp)
 target_link_libraries(SCARAFK_client ${catkin_LIBRARIES})
+add_dependencies(SCARAFK_client rbe500fp_part1_gencpp)
 
 add_executable(SCARAIK_server src/SCARAIK_server.cpp)
 target_link_libraries(SCARAIK_server ${catkin_LIBRARIES})
+add_dependencies(SCARAIK_server rbe500fp_part1_gencpp)
 
 add_executable(SCARAIK_client src/SCARAIK_client.cpp)
 target_link_libraries(SCARAIK_client ${catkin_LIBRARIES})
+add_dependencies(SCARAIK_client rbe500fp_part1_gencpp)
+
+add_executable(SCARA_Gazebo src/SCARA_Gazebo.cpp)
+target_link_libraries(SCARA_Gazebo ${catkin_LIBRARIES})
+add_dependencies(SCARA_Gazebo rbe500fp_part1_gencpp)
