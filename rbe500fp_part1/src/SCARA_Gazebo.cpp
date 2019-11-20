@@ -24,17 +24,7 @@ class Gazebo_Listener{
     void update_jointTwo(const control_msgs::JointControllerState::ConstPtr &msg);
     void update_jointThree(const control_msgs::JointControllerState::ConstPtr &msg);
     float get_q2();
-    Gazebo_Listener();
-
-   
 };
-
-Gazebo_Listener::Gazebo_Listener()
-{
-  this-> q1 = 0;
-  this->q2 = 0;
-  this->q3 = 0;
-}
 
 void Gazebo_Listener::update_jointOne(const control_msgs::JointControllerState::ConstPtr &msg)
 {
@@ -42,24 +32,19 @@ void Gazebo_Listener::update_jointOne(const control_msgs::JointControllerState::
 }
 void Gazebo_Listener::update_jointTwo(const control_msgs::JointControllerState::ConstPtr &msg)
 {
-  this->q2 = msg->set_point;
+  q2 = msg->set_point;
 }
 void Gazebo_Listener::update_jointThree(const control_msgs::JointControllerState::ConstPtr &msg)
 {
   q3 = msg->set_point;
 }
-float Gazebo_Listener::get_q2()
-{
-  cout << this->q2 << endl;
-  return q2;
-}
 
 int main(int argc, char **argv)
 {
-
   ros::init(argc, argv, "SCARA_Gazebo_client");
   ros::NodeHandle n;
-  Gazebo_Listener g_listener();
+  ros::Rate loop_rate(30);
+  Gazebo_Listener g_listener;
 
   ros::Subscriber jointOne = n.subscribe("/custom_scara/joint1_position_controller/state", 1, &Gazebo_Listener::update_jointOne, &g_listener);
   ros::Subscriber jointTwo = n.subscribe("/custom_scara/joint2_position_controller/state", 1, &Gazebo_Listener::update_jointTwo, &g_listener);
@@ -71,17 +56,28 @@ int main(int argc, char **argv)
   rbe500fp_part1::calcIK IKsrv;
   rbe500fp_part1::calcFK FKsrv;
 
-  // ros::Duration(1).sleep();
+  int count = 0;
+  while(count < 3)
+  {
+    ros::spinOnce();
+    cout << "Q1: " << g_listener.q1 << endl;
+    cout << "Q2: " << g_listener.q2 << endl;
+    cout << "Q3: " << g_listener.q3 << endl;
+    loop_rate.sleep();
+    count++;
+  }  
+
+
   FKsrv.request.q1 = g_listener.q1;
   FKsrv.request.q2 = g_listener.q2;
   FKsrv.request.q3 = g_listener.q3;
 
-  //cout<<q1<<endl;
-  
-  g_listener.get_q2();
-  
-  //cout<<q3<<endl;
+  cout << "FKsrc.request.q1: " << FKsrv.request.q1 << endl;
+  cout << "FKsrc.request.q2: " << FKsrv.request.q2 << endl;
+  cout << "FKsrc.request.q2: " << FKsrv.request.q3 << endl;
 
+
+  
   /*
   if (FKclient.call(FKsrv))
   {
