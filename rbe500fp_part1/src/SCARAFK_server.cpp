@@ -14,6 +14,8 @@
 # define L3 0.2		//m
 # define L4 0.1 	//m
 
+using namespace std;
+
 // calculate forward kinematics
 bool fwdkin(rbe500fp_part1::calcFK::Request &req, rbe500fp_part1::calcFK::Response &res)
 {
@@ -37,7 +39,7 @@ bool fwdkin(rbe500fp_part1::calcFK::Request &req, rbe500fp_part1::calcFK::Respon
 		if(std::abs(res.T[i]) <= tolerence)
 			res.T[i] = 0;
 
-		std::cout << (float)res.T[i] << "\n";
+		cout << (float)res.T[i] << endl;
 	}
 
 	return true;

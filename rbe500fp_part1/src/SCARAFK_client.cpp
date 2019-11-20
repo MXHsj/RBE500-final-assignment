@@ -28,9 +28,9 @@ int main(int argc, char **argv)
 
   rbe500fp_part1::calcFK srv1;
 
-  srv1.request.q1 = atoll(argv[1])*deg2rad;
-  srv1.request.q2 = atoll(argv[2])*deg2rad;
-  srv1.request.q3 = atoll(argv[3]);
+  srv1.request.q1 = atof(argv[1])*deg2rad;
+  srv1.request.q2 = atof(argv[2])*deg2rad;
+  srv1.request.q3 = atof(argv[3]);
 
   if (client1.call(srv1))
   {
@@ -40,7 +40,6 @@ int main(int argc, char **argv)
     {
     	cout<<(float)srv1.response.T[i]<<"\n";
     }
-
   }
   else
   {
