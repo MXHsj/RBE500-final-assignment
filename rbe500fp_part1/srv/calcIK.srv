@@ -1,10 +1,10 @@
-float32 x
-float32 y
-float32 z
-float32 roll
-float32 pitch
-float32 yaw
+float64 x
+float64 y
+float64 z
+float64 roll
+float64 pitch
+float64 yaw
 ---
-float32[] q1
-float32[] q2
-float32[] q3
+float64[] q1
+float64[] q2
+float64[] q3

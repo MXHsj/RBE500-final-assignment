@@ -1,0 +1,9 @@
+<launch>
+
+    <node pkg="rbe500fp_part1" type="SCARAFK_server" name="SCARAFK_server" />
+    <node pkg="rbe500fp_part1" type="SCARAIK_server" name="SCARAIK_server" />
+    <node pkg="rbe500fp_part1" type="SCARA_Gazebo" name="SCARA_Gazebo" />
+    #<include file = "$(find custom_robot_gazebo)/launch/custom_scara.launch"/>
+
+</launch>
+
