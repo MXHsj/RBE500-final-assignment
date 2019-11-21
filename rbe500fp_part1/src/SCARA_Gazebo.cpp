@@ -1,8 +1,8 @@
 /*
- * SCARA_client.cpp
+ * SCARA_Gazebo.cpp
  *
- *  Created on: Oct 3, 2019
- *      Author: xihan
+ *  Created on: Nov 21, 2019
+ *     
  */
 
 #include "ros/ros.h"
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
     cout << "FKsrv.request.q1: " << FKsrv.request.q1 << endl;
     cout << "FKsrv.request.q2: " << FKsrv.request.q2 << endl;
-    cout << "FKsrv.request.q2: " << FKsrv.request.q3 << endl;
+    cout << "FKsrv.request.q3: " << FKsrv.request.q3 << endl;
 
     if (FKclient.call(FKsrv))
     {

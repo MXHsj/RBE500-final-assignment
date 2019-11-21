@@ -1,8 +1,7 @@
 /*
- * SCARA_FK.cpp
+ * SCARAIK_server.cpp
  *
- *  Created on: Oct 2, 2019
- *      Author: xihan
+ *  Created on: Nov 21, 2019
  */
 
 #include "ros/ros.h"
@@ -30,7 +29,7 @@ bool fwdkin(rbe500fp_part1::calcIK::Request &req, rbe500fp_part1::calcIK::Respon
 	// elbow-down
 	res.q2[0] = acos((req.x*req.x+req.y*req.y-L2*L2-L3*L3)/(2*L2*L3));
 	res.q1[0] = atan2(req.y,req.x)-atan2(L3*sin(res.q2[0]),(L2+L3*cos(res.q2[0])));
-	res.q3[0] = L1 - req.z;
+	res.q3[0] = (L4 + req.z) - L1;
 
 	if(std::abs(res.q1[0]) < tolerence)
 		res.q1[0] = 0;
@@ -42,7 +41,7 @@ bool fwdkin(rbe500fp_part1::calcIK::Request &req, rbe500fp_part1::calcIK::Respon
 	// elbow-up
 	res.q2[1] = acos((L2*L2+L3*L3-req.x*req.x-req.y*req.y)/(2*L2*L3)) - pi;
 	res.q1[1] = atan2(req.y,req.x)+atan2(2*L2*L3*sin(pi+res.q2[1]),(L2*L2-L3*L3+req.x*req.x+req.y*req.y));
-	res.q3[1] = L1 - req.z;
+	res.q3[1] = (L4 +req.z) - L1;
 
 	if(std::abs(res.q1[1]) < tolerence)
 		res.q1[1] = 0;

@@ -1,8 +1,7 @@
 /*
- * SCARA_client.cpp
+ * SCARAIK_client.cpp
  *
- *  Created on: Oct 3, 2019
- *      Author: xihan
+ *  Created on: Nov 21, 2019
  */
 
 #include "ros/ros.h"
@@ -16,7 +15,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
 
-  //UPDATE FOR INVERSE KINEMATICS
   ros::init(argc, argv, "SCARAIK_client");
 
   if (argc != 7)

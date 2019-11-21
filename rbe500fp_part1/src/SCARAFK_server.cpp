@@ -1,8 +1,7 @@
 /*
- * SCARA_FK.cpp
+ * SCARAFK_server.cpp
  *
- *  Created on: Oct 2, 2019
- *      Author: xihan
+ *  Created on: Nov 21, 2019
  */
 
 #include "ros/ros.h"
@@ -24,7 +23,7 @@ bool fwdkin(rbe500fp_part1::calcFK::Request &req, rbe500fp_part1::calcFK::Respon
 
 	res.T[0] = L2*cos(req.q1) + L3*cos(req.q1 + req.q2);
 	res.T[1] = L2*sin(req.q1) + L3*sin(req.q1 + req.q2);
-	res.T[2] = L1 - L4 - req.q3;
+	res.T[2] = L1 - L4 + req.q3;
 	res.T[3] = 0;
 	res.T[4] = 0;
 	float Tpos0 = cos(req.q1 + req.q2);

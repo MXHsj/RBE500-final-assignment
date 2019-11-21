@@ -1,8 +1,7 @@
 /*
- * SCARA_client.cpp
+ * SCARAFK_client.cpp
  *
- *  Created on: Oct 3, 2019
- *      Author: xihan
+ *  Created on: Nov 21, 2019
  */
 
 #include "ros/ros.h"
