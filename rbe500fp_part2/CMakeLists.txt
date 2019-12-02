@@ -57,8 +57,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
-   calcFK.srv
-   calcIK.srv
+   RefPos.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -207,9 +206,13 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-add_executable(Pos_Control src/SCARA_Gazebo.cpp)
-target_link_libraries(Pos_Control ${catkin_LIBRARIES})
-add_dependencies(Pos_Control rbe500fp_part2_gencpp)
+add_executable(PDClient src/PDClient.cpp)
+target_link_libraries(PDClient ${catkin_LIBRARIES})
+add_dependencies(PDClient rbe500fp_part2_gencpp)
+
+add_executable(PD_Server src/PDServer.cpp)
+target_link_libraries(PD_Server ${catkin_LIBRARIES})
+add_dependencies(PD_Server rbe500fp_part2_gencpp)
 
 add_executable(toFile src/toFile.cpp)
 target_link_libraries(toFile ${catkin_LIBRARIES})
