@@ -1,7 +1,7 @@
 /*
  * PDServer.cpp
  *
- *  Created on: Nov 21, 2019
+ *  Created on: Nov 25, 2019
  */
 
 #include "ros/ros.h"
@@ -26,6 +26,7 @@ bool goTo(rbe500fp_part2::RefPos::Request &req, rbe500fp_part2::RefPos::Response
   std_msgs::Float64 message;
   message.data = req.ref;
   
+  // Publish the reference position to the Gazebo topic
   command_pub.publish(message);
 
 	ROS_INFO("Request: Reference = %f", (float)req.ref);
@@ -41,9 +42,11 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "PD_Server");
   ros::NodeHandle n;
 
+  // Create a service for recieving reference position
   ros::ServiceServer service = n.advertiseService("PD_Server", goTo);
-  command_pub = n.advertise<std_msgs::Float64>("/custom_scara/joint3_position_controller/command", 1000);
 
+  // Create a publish relation to the SCARA command topic
+  command_pub = n.advertise<std_msgs::Float64>("/custom_scara/joint3_position_controller/command", 1000);
 
   ROS_INFO("Ready to Move the Third Joint");
 
