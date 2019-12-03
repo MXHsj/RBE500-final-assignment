@@ -206,16 +206,12 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-add_executable(PDClient src/PDClient.cpp)
-target_link_libraries(PDClient ${catkin_LIBRARIES})
-add_dependencies(PDClient rbe500fp_part2_gencpp)
+add_executable(PD_Client src/PDClient.cpp)
+target_link_libraries(PD_Client ${catkin_LIBRARIES})
+add_dependencies(PD_Client rbe500fp_part2_gencpp)
 
 add_executable(PD_Server src/PDServer.cpp)
 target_link_libraries(PD_Server ${catkin_LIBRARIES})
 add_dependencies(PD_Server rbe500fp_part2_gencpp)
-
-add_executable(toFile src/toFile.cpp)
-target_link_libraries(toFile ${catkin_LIBRARIES})
-add_dependencies(toFile rbe500fp_part2_gencpp)
 
 
