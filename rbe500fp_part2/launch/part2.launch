@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="rbe500fp_part2" type="PD_Server" name="PD_server" />
+    #<include file = "$(find custom_robot_gazebo)/launch/custom_scara.launch"/>
+
+</launch>
+
