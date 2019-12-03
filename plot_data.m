@@ -12,7 +12,7 @@ joint_states = rossubscriber('/custom_scara/joint_states');
 
 joint3 = [];
 rate = robotics.Rate(20);
-record_time = 8;
+record_time = 3;
 reset(rate);
 
 while rate.TotalElapsedTime < record_time
@@ -32,7 +32,7 @@ hold on
 plot(t,ref,'-.m','LineWidth',1);
 grid on
 xlabel('time [sec]');
-ylabel('joint3 position [rad]');
+ylabel('joint3 position [m]');
 legend('actual joint pose','desired joint pose');
 
 
