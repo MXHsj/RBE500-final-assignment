@@ -1,7 +1,7 @@
 /*
- * PDServer.cpp
+ * PDClient.cpp
  *
- *  Created on: Nov 21, 2019
+ *  Created on: Nov 25, 2019
  *     
  */
 
@@ -19,6 +19,7 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PD_Client");
 
+    // Make sure an argument was given
     if (argc != 2)
     {
         ROS_INFO("Usage: Input a Reference Position for Joint 3 in [m]");
@@ -26,12 +27,15 @@ int main(int argc, char **argv)
     }
     ros::NodeHandle n;
 
+    // Create a client relationship to the PD_Server
     ros::ServiceClient RefClient = n.serviceClient<rbe500fp_part2::RefPos>("PD_Server");
 
     rbe500fp_part2::RefPos RefSrv;
 
+    // Parse the argument
     RefSrv.request.ref = atof(argv[1]);
 
+    // Send the reference position to the PD_Service
     if (RefClient.call(RefSrv))
     {
         ROS_INFO("Moving: \n Motion = ");
