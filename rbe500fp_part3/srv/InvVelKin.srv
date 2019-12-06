@@ -1,0 +1,7 @@
+float32 dx
+float32 dy
+float32 dz
+---
+float32 dq1
+float32 dq2
+float32 dq3

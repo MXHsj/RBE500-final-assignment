@@ -1,0 +1,33 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/xihan/jackal_navigation/devel/include/**",
+                "/home/xihan/rbe_ws/devel/include/**",
+                "/opt/ros/kinetic/include/**",
+                "/home/xihan/franka_ws/devel/include/**",
+                "/home/xihan/catkin_ws/devel/include/**",
+                "/home/xihan/catkin_ws/src/custom_robot_description/include/**",
+                "/home/xihan/franka_ws/src/franka_ros/franka_control/include/**",
+                "/home/xihan/franka_ws/src/franka_ros/franka_example_controllers/include/**",
+                "/home/xihan/franka_ws/src/franka_ros/franka_gripper/include/**",
+                "/home/xihan/franka_ws/src/franka_ros/franka_hw/include/**",
+                "/home/xihan/jackal_navigation/src/LMS1xx/include/**",
+                "/home/xihan/rbe_ws/src/RBE500-final-assignment/rbe500fp_part3/include/**",
+                "/home/xihan/catkin_ws/src/turtle_trial/include/**",
+                "/home/xihan/catkin_ws/src/xihan_rbe/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
