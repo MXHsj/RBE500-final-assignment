@@ -1,12 +1,6 @@
 #include "ros/ros.h"
-
-int main()
-{
-    return 0;
-}
-/*
-#include "xihan_rbe/calcFK.h"
-#include "xihan_rbe/calcJac.h"
+#include "rbe500fp_part3/FwdVelKin.h"
+#include "rbe500fp_part3/InvVelKin.h"
 #include <cmath>
 
 # define L1 0.2		//m
@@ -15,95 +9,79 @@ int main()
 # define L4 0.1 	//m
 
 // calculate forward kinematics
-bool fwdkin(xihan_rbe::calcFK::Request &req, xihan_rbe::calcFK::Response &res)
+bool fwdkin(rbe500fp_part3::FwdVelKin::Request &req, rbe500fp_part3::FwdVelKin::Response &res)
 {
-	res.T.resize(16);
+
+	// response 6x1
+	res.TipVel.resize(5);
+
+	res.TipVel[0] = -req.dq2*((cos(req.q1)*sin(req.q2))/5 + (cos(req.q2)*sin(req.q1))/5) - req.dq1*(sin(req.q1)/5 + (cos(req.q1)*sin(req.q2))/5 + (cos(req.q2)*sin(req.q1))/5)
+	res.TipVel[1] = req.dq2*((cos(req.q1)*cos(req.q2))/5 - (sin(req.q1)*sin(req.q2))/5) + req.dq1*(cos(req.q1)/5 + (cos(req.q1)*cos(req.q2))/5 - (sin(req.q1)*sin(req.q2))/5)
+	res.TipVel[2] = req.dq3
+	res.TipVel[3] = 0
+	res.TipVel[4] = 0
+	res.TipVel[5] = req.dq1 + req.dq2
+
 	float tolerence = 0.001;
 
-	res.T[0] = cos(req.q1 + req.q2);
-	res.T[1] = sin(req.q1 + req.q2);
-	res.T[3] = L2*cos(req.q1) + L3*cos(req.q1 + req.q2);
-	res.T[4] = sin(req.q1 + req.q2);
-	res.T[5] = -cos(req.q1 + req.q2);
-	res.T[7] = L2*sin(req.q1) + L3*sin(req.q1 + req.q2);
-	res.T[10] = -1;
-	res.T[11] = L1 - L4 - req.q3;
-	res.T[15] = 1;
+	ROS_INFO("request: dq1=%f, dq2=%f, dq3=%f, q1=%f, q2=%f, q3=%f", (float)req.dq1, (float)req.dq2, (float)req.dq3, (float)req.q1, (float)req.q2, (float)req.q3);
+	ROS_INFO("sending back response TipVel:");
 
-	ROS_INFO("request: q1=%f, q2=%f, q3=%f", (float)req.q1, (float)req.q2, (float)req.q3);
-	ROS_INFO("sending back response T:");
-
-	int j = 0;
-	for(int i = 0; i < 16; i ++)
+	for(int i = 0; i < 6; i ++)
 	{
-		if(res.T[i] <= tolerence)
-			res.T[i] = 0;
+		if(res.TipVel[i] <= tolerence)
+			res.TipVel[i] = 0;
 
-		std::cout << (float)res.T[i] << "\t";
-
-		if(j == 3)		// display in 4x4 format
-		{
-			std::cout << std::endl;
-			j = 0;
-		}
-		else
-			j++;
+		std::cout << (float)res.TipVel[i] << "\t";
 	}
 
 	return true;
 }
 
-// calculate Jacobian
-bool jacobians(xihan_rbe::calcJac::Request &req, xihan_rbe::calcJac::Response &res)
+// calculate inverse kinematics
+bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::Response &res)
 {
-	res.Jac.resize(18);
 	float tolerence = 0.001;
-
-	res.Jac[0] = -(L2*sin(req.q1)+L3*sin(req.q1+req.q2));
-	res.Jac[1] = -L2*sin(req.q1+req.q2);
-	res.Jac[3] = (L2*cos(req.q1)+L3*cos(req.q1+req.q2));
-	res.Jac[4] = L2*cos(req.q1+req.q2);
-	res.Jac[8] = 1;
-	res.Jac[15] = 1;
-	res.Jac[16] = 1;
-
-	ROS_INFO("request: q1=%f, q2=%f, q3=%f", (float)req.q1, (float)req.q2, (float)req.q3);
-	ROS_INFO("sending back response J:");
-
-	int j = 0;
-	for(int i = 0; i < 18; i ++)
+ 
+	res.dq1 = (50*req.daz*cos(req.q2) - 255*req.dy*cos(req.q1) + 255*req.dx*sin(req.q1) + 5*req.dy*cos(req.q1 + 2*req.q2) - 5*req.dx*sin(req.q1 + 2*req.q2))/(cos(2*req.q2) - 51)
+	if (res.dq1 < tolerance)
 	{
-		if(res.Jac[i] <= tolerence)
-			res.Jac[i] = 0;
-
-		std::cout << (float)res.Jac[i] << "\t";
-
-		if(j == 2)		// display in 6x3 format
-		{
-			std::cout << std::endl;
-			j = 0;
-		}
-		else
-			j++;
+		res.dq1 = 0
 	}
+	res.dq2 = (130*req.dy*cos(req.q1) - 25*req.daz*cos(req.q2) - 25*req.daz - 130*req.dx*sin(req.q1) + 5*req.dx*cos(req.q1)*sin(req.q2) + 5*req.dy*sin(req.q1)*sin(req.q2) - 5*req.dy*cos(req.q1)*cos(req.q2)^2 + 5*req.dx*cos(req.q2)^2*sin(req.q1) + 5*req.dx*cos(req.q1)*cos(req.q2)*sin(req.q2) + 5*req.dy*cos(req.q2)*sin(req.q1)*sin(req.q2))/(cos(req.q2)^2 - 26)
+	if (res.dq2 < tolerance)
+	{
+		res.dq2 = 0
+	}
+	res.dq3 = req.dz
+	if (res.dq3 < tolerance)
+	{
+		res.dq3 = 0
+	}
+
+	ROS_INFO("request: dq1=%f, dq2=%f, dq3=%f, dax=%f, day=%f, daz=%f, q1=%f, q2=%f, q3=%f", (float)req.dq1, (float)req.dq2, (float)req.dq3, (float)req.dax, (float)req.day, (float)req.daz, (float)req.q1, (float)req.q2, (float)req.q3);
+	ROS_INFO("sending back response:");
+
+	std::cout << (float)res.dq1 << "\t";
+	std::cout << (float)res.dq2 << "\t";
+	std::cout << (float)res.dq3 << "\t";
 
 	return true;
 }
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "SCARA_server");
+  ros::init(argc, argv, "VelocityKin_server");
   ros::NodeHandle n;
 
   ros::ServiceServer service = n.advertiseService("calculate_FK", fwdkin);
-  ros::ServiceServer servive = n.advertiseService("calculate_Jac", jacobians);
+  ros::ServiceServer servive = n.advertiseService("calculate_IK", invkin);
 
-  ROS_INFO("Ready to calculate forward kinematics for SCARA robot");
-  ROS_INFO("Ready to calculate Jacobian for SCARA robot");
+  ROS_INFO("Ready to calculate forward velocity kinematics for SCARA robot");
+  ROS_INFO("Ready to calculate inverse velocity kinematics for SCARA robot");
 
   ros::spin();
 
   return 0;
 }
 
-*/

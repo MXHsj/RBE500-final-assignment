@@ -1,7 +1,9 @@
 float32 dq1
 float32 dq2
 float32 dq3
+float31 q1
+float32 q2
+float32 q3
 ---
-float32 dx
-float32 dy
-float32 dz
+float32[] TipVel
+
