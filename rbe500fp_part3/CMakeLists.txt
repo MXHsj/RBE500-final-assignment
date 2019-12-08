@@ -59,6 +59,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    FwdVelKin.srv
    InvVelKin.srv
+   RefPos.srv
  )
 
 ## Generate actions in the 'action' folder
