@@ -8,18 +8,24 @@
 # define L3 0.2		//m
 # define L4 0.1 	//m
 
-// calculate forward kinematics
+// calculate forward kinematics (joint velocities -> cartesian velocities)
 bool fwdkin(rbe500fp_part3::FwdVelKin::Request &req, rbe500fp_part3::FwdVelKin::Response &res)
 {
 
-	// response 6x1
+	// Response matrix is 6x1
 	res.TipVel.resize(5);
 
+	// vx
 	res.TipVel[0] = -req.dq2*((cos(req.q1)*sin(req.q2))/5 + (cos(req.q2)*sin(req.q1))/5) - req.dq1*(sin(req.q1)/5 + (cos(req.q1)*sin(req.q2))/5 + (cos(req.q2)*sin(req.q1))/5);
+	// vy
 	res.TipVel[1] = req.dq2*((cos(req.q1)*cos(req.q2))/5 - (sin(req.q1)*sin(req.q2))/5) + req.dq1*(cos(req.q1)/5 + (cos(req.q1)*cos(req.q2))/5 - (sin(req.q1)*sin(req.q2))/5);
+	// vz
 	res.TipVel[2] = req.dq3;
+	// wx
 	res.TipVel[3] = 0;
+	// wy
 	res.TipVel[4] = 0;
+	// wz
 	res.TipVel[5] = req.dq1 + req.dq2;
 
 	float tolerence = 0.001;
@@ -38,21 +44,26 @@ bool fwdkin(rbe500fp_part3::FwdVelKin::Request &req, rbe500fp_part3::FwdVelKin::
 	return true;
 }
 
-// calculate inverse kinematics
+// calculate inverse kinematics (cartestian velocities -> joint velocities)
 bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::Response &res)
 {
 	float tolerence = 0.001;
  
+	// velocity joint 1
 	res.dq1 = (50*req.daz*cos(req.q2) - 255*req.dy*cos(req.q1) + 255*req.dx*sin(req.q1) + 5*req.dy*cos(req.q1 + 2*req.q2) - 5*req.dx*sin(req.q1 + 2*req.q2))/(cos(2*req.q2) - 51);
 	if (res.dq1 < tolerence)
 	{
 		res.dq1 = 0;
 	}
+
+	// velocity joint 2
 	res.dq2 = (130*req.dy*cos(req.q1) - 25*req.daz*cos(req.q2) - 25*req.daz - 130*req.dx*sin(req.q1) + 5*req.dx*cos(req.q1)*sin(req.q2) + 5*req.dy*sin(req.q1)*sin(req.q2) - 5*req.dy*cos(req.q1)*pow(cos(req.q2),2) + 5*req.dx*pow(cos(req.q2),2)*sin(req.q1) + 5*req.dx*cos(req.q1)*cos(req.q2)*sin(req.q2) + 5*req.dy*cos(req.q2)*sin(req.q1)*sin(req.q2))/(pow(cos(req.q2),2) - 26);
 	if (res.dq2 < tolerence)
 	{
 		res.dq2 = 0;
 	}
+
+	// velocity joint 3
 	res.dq3 = req.dz;
 	if (res.dq3 < tolerence)
 	{
@@ -74,7 +85,10 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "VelocityKin_server");
   ros::NodeHandle n;
 
+  // Advertise a service for forward kinematics
   ros::ServiceServer service = n.advertiseService("calculate_FK", fwdkin);
+
+  // Advertise a service for inverse kinematics
   ros::ServiceServer servive = n.advertiseService("calculate_IK", invkin);
 
   ROS_INFO("Ready to calculate forward velocity kinematics for SCARA robot");

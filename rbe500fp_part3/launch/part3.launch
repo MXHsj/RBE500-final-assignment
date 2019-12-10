@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="rbe500fp_part3" type="PositionServer" name="PositionServer" />
+    #<include file = "$(find custom_robot_gazebo)/launch/custom_scara.launch"/>
+
+</launch>
+

@@ -1,12 +1,12 @@
 /*
- * PDClient.cpp
+ * VelocityCmd.cpp
  *
  *  Created on: Nov 25, 2019
  *     
  */
 
 #include "ros/ros.h"
-#include "rbe500fp_part2/RefPos.h"
+#include "rbe500fp_part3/RefVel.h"
 #include "control_msgs/JointControllerState.h"
 #include <cstdlib>
 
@@ -17,28 +17,28 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "PD_Client");
+    ros::init(argc, argv, "Velocity_Client");
 
     // Make sure an argument was given
     if (argc != 4)
     {
-        ROS_INFO("Usage: Input a Reference Position for Joint1 and Joint2 in [rad], and Joint 3 in [m]");
+        ROS_INFO("Usage: Input a Reference Velocity in Cartestian Coordinates");
         return 1;
     }
     ros::NodeHandle n;
 
-    // Create a client relationship to the PD_Server
-    ros::ServiceClient RefClient = n.serviceClient<rbe500fp_part2::RefPos>("PD_Server");
+    // Create a client relationship to the VelServer
+    ros::ServiceClient RefClient = n.serviceClient<rbe500fp_part3::RefVel>("VelServer");
 
-    rbe500fp_part2::RefPos RefSrv;
+    rbe500fp_part3::RefVel RefSrv;
 
     // Parse the argument
-    RefSrv.request.ref1 = atof(argv[1]);
-    RefSrv.request.ref2 = atof(argv[2]);
-    RefSrv.request.ref3 = atof(argv[3]);
+    RefSrv.request.refx = atof(argv[1]);
+    RefSrv.request.refy = atof(argv[2]);
+    RefSrv.request.refz = atof(argv[3]);
 
 
-    // Send the reference position to the PD_Service
+    // Send the reference position to the VelServer
     if (RefClient.call(RefSrv))
     {
         ROS_INFO("Moving: \n Motion = ");

@@ -5,7 +5,7 @@
  */
 
 #include "ros/ros.h"
-#include "rbe500fp_part2/RefPos.h"
+#include "rbe500fp_part3/RefPos.h"
 #include "std_msgs/Float64.h"
 #include <boost/bind.hpp>
 #include <cmath>
@@ -17,20 +17,22 @@
 
 using namespace std;
 
+// Global variables for publishing joint commands
 ros::Publisher command_pub_j1;
 ros::Publisher command_pub_j2;
 ros::Publisher command_pub_j3;
 
 // Recieve a Reference Position 
-bool goTo(rbe500fp_part2::RefPos::Request &req, rbe500fp_part2::RefPos::Response &res)
+bool goTo(rbe500fp_part3::RefPos::Request &req, rbe500fp_part3::RefPos::Response &res)
 {
-	
+  
+  // Make Float64 messages for each joint
   std_msgs::Float64 messageJoint1;
-  message.data = req.ref1;
+  messageJoint1.data = req.ref1;
   std_msgs::Float64 messageJoint2;
-  message.data = req.ref2;
+  messageJoint2.data = req.ref2;
   std_msgs::Float64 messageJoint3;
-  message.data = req.ref3;
+  messageJoint3.data = req.ref3;
   
   // Publish the reference position to the Gazebo topic
   command_pub_j1.publish(messageJoint1);
@@ -53,7 +55,7 @@ int main(int argc, char **argv)
   // Create a service for recieving reference position
   ros::ServiceServer service = n.advertiseService("PD_Server", goTo);
 
-  // Create a publish relation to the SCARA command topic
+  // Create a publish relation to the SCARA command topic for each joint
   command_pub_j1 = n.advertise<std_msgs::Float64>("/custom_scara/joint1_position_controller/command", 1000);
   command_pub_j2 = n.advertise<std_msgs::Float64>("/custom_scara/joint2_position_controller/command", 1000);
   command_pub_j3 = n.advertise<std_msgs::Float64>("/custom_scara/joint3_position_controller/command", 1000);
