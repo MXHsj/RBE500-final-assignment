@@ -60,6 +60,7 @@ find_package(catkin REQUIRED COMPONENTS
    FwdVelKin.srv
    InvVelKin.srv
    RefPos.srv
+   RefVel.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -217,9 +218,16 @@ add_dependencies(Scara_trajectory_tracking rbe500fp_part3_gencpp)
 
 add_executable(PositionCmd src/PositionCmd.cpp)
 target_link_libraries(PositionCmd ${catkin_LIBRARIES})
-add_dependencies(PositionCmd rbe500fp_part4_gencpp)
+add_dependencies(PositionCmd rbe500fp_part3_gencpp)
 
 add_executable(PositionServer src/PositionServer.cpp)
 target_link_libraries(PositionServer ${catkin_LIBRARIES})
-add_dependencies(PositionServer rbe500fp_part4_gencpp)
+add_dependencies(PositionServer rbe500fp_part3_gencpp)
 
+add_executable(VelocityCmd src/VelocityCmd.cpp)
+target_link_libraries(VelocityCmd ${catkin_LIBRARIES})
+add_dependencies(VelocityCmd rbe500fp_part3_gencpp)
+
+add_executable(VelocityServer src/VelocityServer.cpp)
+target_link_libraries(VelocityServer ${catkin_LIBRARIES})
+add_dependencies(VelocityServer rbe500fp_part3_gencpp)
