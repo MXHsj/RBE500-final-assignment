@@ -1,5 +1,7 @@
 <launch>
-    <node pkg="rbe500fp_part3" type="PositionServer" name="PositionServer" />
+    <node pkg="rbe500fp_part3" type="PositionServer" name="Position_server" />
+    <node pkg="rbe500fp_part3" type="Kinematics_server" name="KinematicsServer" />
+    <node pkg="rbe500fp_part3" type="VelocityServer" name="VelocityServer" />
     #<include file = "$(find custom_robot_gazebo)/launch/custom_scara.launch"/>
 
 </launch>
