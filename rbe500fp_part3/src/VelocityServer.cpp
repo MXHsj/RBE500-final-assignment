@@ -26,9 +26,11 @@ public:
     float q1;
     float q2;
     float q3;
+    float time;
     void update_jointOne(const control_msgs::JointControllerState::ConstPtr &msg);
     void update_jointTwo(const control_msgs::JointControllerState::ConstPtr &msg);
     void update_jointThree(const control_msgs::JointControllerState::ConstPtr &msg);
+    void update_time();
 };
 
 void Gazebo_Listener::update_jointOne(const control_msgs::JointControllerState::ConstPtr &msg)
@@ -50,7 +52,10 @@ void Gazebo_Listener::update_jointThree(const control_msgs::JointControllerState
         q3 = 0;
 }
 
-
+void Gazebo_Listener::update_time()
+{
+    time += 1/30;
+}
 
 // Recieve a Reference Position 
 bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response &res)
@@ -82,7 +87,6 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
   RefSrv.request.daz = 0;
 
   Gazebo_Listener g_listener;
-
 
   ros::Subscriber jointOne = n.subscribe("/custom_scara/joint1_position_controller/state", 1, &Gazebo_Listener::update_jointOne, &g_listener);
   ros::Subscriber jointTwo = n.subscribe("/custom_scara/joint2_position_controller/state", 1, &Gazebo_Listener::update_jointTwo, &g_listener);
