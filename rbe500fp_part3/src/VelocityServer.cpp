@@ -72,7 +72,6 @@ Gazebo_Listener g_listener;
 bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response &res)
 {
 	
-
   //Create Client
 
   rbe500fp_part3::InvVelKin KinSrv;
@@ -97,50 +96,57 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
   KinSrv.request.daz = 0;
 
 
+  
+    ros::Rate loop_rate(30);
+    for (int i = 0; i < 3; i ++)
+    {
+      ros::spinOnce();
+      loop_rate.sleep();
+    }
 
-  ros::Rate loop_rate(30);
-  for (int i = 0; i < 3; i ++)
-  {
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
-
-  KinSrv.request.q1 = g_listener.q1;
-  KinSrv.request.q2 = g_listener.q2;
-  KinSrv.request.q3 = g_listener.q3;
-
-
-  // Define messages to publish to controller
-  std_msgs::Float64 messageJoint1;
-  std_msgs::Float64 messageJoint2;
-  std_msgs::Float64 messageJoint3;
+    KinSrv.request.q1 = g_listener.q1;
+    KinSrv.request.q2 = g_listener.q2;
+    KinSrv.request.q3 = g_listener.q3;
 
 
-  if (KinClient.call(KinSrv))
-  {
-    ROS_INFO("Calculating");
+    // Define messages to publish to controller
+    std_msgs::Float64 messageJoint1;
+    std_msgs::Float64 messageJoint2;
+    std_msgs::Float64 messageJoint3;
+
+
+    if (KinClient.call(KinSrv))
+    {
+      ROS_INFO("Calculating");
     
-    // Set values of messages for each joint from response of kinematics server
-    messageJoint1.data = KinSrv.response.dq1;
-    messageJoint2.data = KinSrv.response.dq2;
-    messageJoint3.data = KinSrv.response.dq3;
-  }
-  else
-  {
+      // Set values of messages for each joint from response of kinematics server
+      messageJoint1.data = KinSrv.response.dq1;
+      cout << "vel j1: " << messageJoint1.data << endl;
+      messageJoint2.data = KinSrv.response.dq2;
+      cout << "vel j2: " << messageJoint2.data << endl;
+      messageJoint3.data = KinSrv.response.dq3;
+      cout << "vel j3: " << messageJoint3.data << endl;
+
+    }
+   else
+    {
       ROS_ERROR("Failed to call service RefSrv");
       return 1;
-  }
+    }
  
-  std_msgs::Float64 distance1;
-  std_msgs::Float64 distance2;
-  std_msgs::Float64 distance3;
-  // Publish the reference position to the Gazebo topic
   while(ros::ok())
   {
-
-    distance1.data = g_listener.q1 - messageJoint1.data * (1/30);
-    distance2.data = g_listener.q2 - messageJoint2.data * (1/30);
-    distance3.data = g_listener.q3 - messageJoint3.data * (1/30);
+    std_msgs::Float64 distance1;
+    std_msgs::Float64 distance2;
+    std_msgs::Float64 distance3;
+    // Publish the reference position to the Gazebo topic
+  
+    distance1.data = g_listener.q1 - (messageJoint1.data * (1/30));
+    // cout << "pos 1: " << distance1.data << endl;
+    distance2.data = g_listener.q2 - (messageJoint2.data * (1/30));
+    // cout << "pos 2: " << distance2.data << endl;
+    distance3.data = g_listener.q3 - (messageJoint3.data * (1/30));
+    // cout << "pos 3: " << distance3.data << endl;
     command_pub_j1.publish(distance1);
     command_pub_j2.publish(distance2);
     command_pub_j3.publish(distance3);
