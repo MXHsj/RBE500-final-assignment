@@ -95,7 +95,6 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
   KinSrv.request.day = 0;
   KinSrv.request.daz = 0;
 
-
   
     ros::Rate loop_rate(30);
     for (int i = 0; i < 3; i ++)
@@ -107,7 +106,6 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
     KinSrv.request.q1 = g_listener.q1;
     KinSrv.request.q2 = g_listener.q2;
     KinSrv.request.q3 = g_listener.q3;
-
 
     // Define messages to publish to controller
     std_msgs::Float64 messageJoint1;
