@@ -212,10 +212,6 @@ add_executable(Kinematics_server src/KinematicsServer.cpp)
 target_link_libraries(Kinematics_server ${catkin_LIBRARIES})
 add_dependencies(Kinematics_server rbe500fp_part3_gencpp)
 
-add_executable(Scara_trajectory_tracking src/Scara_trajectory_tracking.cpp)
-target_link_libraries(Scara_trajectory_tracking ${catkin_LIBRARIES})
-add_dependencies(Scara_trajectory_tracking rbe500fp_part3_gencpp)
-
 add_executable(PositionCmd src/PositionCmd.cpp)
 target_link_libraries(PositionCmd ${catkin_LIBRARIES})
 add_dependencies(PositionCmd rbe500fp_part3_gencpp)

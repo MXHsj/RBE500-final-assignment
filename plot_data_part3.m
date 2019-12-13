@@ -7,35 +7,36 @@ rosshutdown
 ipaddress = 'localhost';
 rosinit(ipaddress);
 
-joint_states = rossubscriber('/custom_scara/joint_states');
-
-joint1_rec = [];
-joint2_rec = [];
-joint3_rec = [];
+% joint_states = rossubscriber('/custom_scara/joint_states');
+link_states = rossubscriber('/gazebo/link_states');
+vx_rec = [];
+vy_rec = [];
+vz_rec = [];
 rate = robotics.Rate(30);
 record_time = 10;
 reset(rate);
 
-joint_init = receive(joint_states);
-joint1_old = joint_init.Position(1);
-joint2_old = joint_init.Position(2);
-joint3_old = joint_init.Position(3);
+link_init = receive(link_states);
+x_old = link_init.Pose(5,1).Position.X;
+y_old = link_init.Pose(5,1).Position.Y;
+z_old = link_init.Pose(5,1).Position.Z;
 t_old = 0;
 
 while rate.TotalElapsedTime < record_time
     t = rate.TotalElapsedTime;
     dt = t - t_old;
-    joint_update = receive(joint_states);
-    joint1_curr = joint_update.Position(1);
-    joint2_curr = joint_update.Position(2);
-    joint3_curr = joint_update.Position(3);
-    joint1_rec = [joint1_rec, (joint1_curr - joint1_old)/dt];
-    joint2_rec = [joint2_rec, (joint2_curr - joint2_old)/dt];
-    joint3_rec = [joint3_rec, (joint3_curr - joint3_old)/dt];
+    link_update = receive(link_states);
+    x_curr = link_update.Pose(5,1).Position.X;
+    y_curr = link_update.Pose(5,1).Position.Y;
+    z_curr = link_update.Pose(5,1).Position.Z;
+    
+    vx_rec = [vx_rec, (x_curr - x_old)/dt];
+    vy_rec = [vy_rec, (y_curr - y_old)/dt];
+    vz_rec = [vz_rec, (z_curr - z_old)/dt];
     disp('recording ...');
-    joint1_old = joint1_curr;
-    joint2_old = joint2_curr;
-    joint3_old = joint3_curr;
+    x_old = x_curr;
+    y_old = y_curr;
+    z_old = z_curr;
     t_old = t;
     waitfor(rate);
 end
@@ -44,27 +45,37 @@ disp('complete');
 
 %% plotting
 
-t = linspace(0,record_time,length(joint3_rec));
-ref1 = 0.05*ones(1,length(joint1_rec));
-ref2 = 0.05*ones(1,length(joint2_rec));
-ref3 = 0.05*ones(1,length(joint3_rec));
+t = linspace(0,record_time,length(vx_rec));
+ref1 = 0.0*ones(1,length(vx_rec));
+ref2 = 0.1*ones(1,length(vy_rec));
+ref3 = 0.0*ones(1,length(vz_rec));
 
 subplot(3,1,1)
-plot(t,joint1_rec,'b','LineWidth',1);
+plot(t,vx_rec,'b','LineWidth',1);
 hold on
 plot(t,ref1,'-.m','LineWidth',1);
-
-subplot(3,1,2)
-plot(t,joint2_rec,'b','LineWidth',1);
-hold on
-plot(t,ref2,'-.m','LineWidth',1);
-
-subplot(3,1,3)
-plot(t,joint3_rec,'b','LineWidth',1);
-hold on
-plot(t,ref,'-.m','LineWidth',1);
-
 grid on
 xlabel('time [sec]');
-ylabel('joint velocities [rad/s] & [m/s]');
-legend('actual joint velocity','desired joint velocity');
+ylabel('vx [m/s]');
+legend('actual x direction velocity','desired x direction velocity');
+
+subplot(3,1,2)
+plot(t,vy_rec,'b','LineWidth',1);
+hold on
+plot(t,ref2,'-.m','LineWidth',1);
+grid on
+xlabel('time [sec]');
+ylabel('vy [m/s]');
+legend('actual y direction velocity','desired y direction velocity');
+
+subplot(3,1,3)
+plot(t,vz_rec,'b','LineWidth',1);
+hold on
+plot(t,ref3,'-.m','LineWidth',1);
+grid on
+xlabel('time [sec]');
+ylabel('vz [m/s]');
+legend('actual z direction velocity','desired z direction velocity');
+
+
+
