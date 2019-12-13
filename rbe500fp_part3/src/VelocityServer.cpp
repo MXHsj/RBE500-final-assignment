@@ -16,7 +16,7 @@
 # define L2 0.2		//m
 # define L3 0.2		//m
 # define L4 0.1 	//m
-# define loop 1
+# define loop 10.0
 
 using namespace std;
 
@@ -94,15 +94,17 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
   KinSrv.request.dax = 0.1;
   KinSrv.request.day = 0.1;
   KinSrv.request.daz = 0.1;
-
   
     ros::Rate loop_rate(loop);
+
     for (int i = 0; i < 3; i ++)
     {
       ros::spinOnce();
-      loop_rate.sleep();
+      ros::Duration(0.2).sleep();
     }
 
+  while(ros::ok())  
+  {
     KinSrv.request.q1 = g_listener.q1;
     KinSrv.request.q2 = g_listener.q2;
     KinSrv.request.q3 = g_listener.q3;
@@ -112,18 +114,14 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
     std_msgs::Float64 messageJoint2;
     std_msgs::Float64 messageJoint3;
 
-
     if (KinClient.call(KinSrv))
     {
       ROS_INFO("Calculating");
     
       // Set values of messages for each joint from response of kinematics server
       messageJoint1.data = KinSrv.response.dq1;
-      cout << "vel j1: " << messageJoint1.data << endl;
       messageJoint2.data = KinSrv.response.dq2;
-      cout << "vel j2: " << messageJoint2.data << endl;
       messageJoint3.data = KinSrv.response.dq3;
-      cout << "vel j3: " << messageJoint3.data << endl;
 
     }
    else
@@ -131,14 +129,11 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
       ROS_ERROR("Failed to call service RefSrv");
       return 1;
     }
-   
+    cout << "one over" << (float)(1/loop) <<endl;
     std_msgs::Float64 distance1;
     std_msgs::Float64 distance2;
     std_msgs::Float64 distance3;
 
-  for (int i = 0; i < 10; i++)
-  {
-    ROS_INFO("Publishing");  
 
     distance1.data = g_listener.q1 + (float)(messageJoint1.data * (1/loop));
     distance2.data = g_listener.q2 + (float)(messageJoint2.data * (1/loop));
