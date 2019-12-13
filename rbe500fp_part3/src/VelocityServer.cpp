@@ -29,8 +29,6 @@ ros::ServiceClient KinClient;
 ros::Subscriber jointOne;
 ros::Subscriber jointTwo;
 ros::Subscriber jointThree;
-
-Gazebo_Listener g_listener;
   
 class Gazebo_Listener{
 public:
@@ -64,6 +62,8 @@ void Gazebo_Listener::update_jointThree(const control_msgs::JointControllerState
     if (std::abs(q3) < 0.01)
         q3 = 0;
 }
+
+Gazebo_Listener g_listener;
 
 // Recieve a Reference Velocity and perform Inverse Velocity Kinematics, and send values to Gazebo
 bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response &res)
@@ -121,6 +121,11 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
     {
       ROS_ERROR("Failed to call service RefSrv");
       return 1;
+    }
+
+    if (messageJoint1.data == 0 && messageJoint2.data == 0 && messageJoint3.data == 0)
+    {
+      break;
     }
 
     // Define messages to publish to Gazebo controller topics

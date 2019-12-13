@@ -62,11 +62,20 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 
 	// Calculate the determinate of the Robot
 	float determinate = (a*((e*i)-(f*h))) - (b*((d*i)-(f*g))) + (c*((d*h)-(e*g)));
-
-	if (determinate == 0)
+	std::cout << "determinate" << determinate << std::endl;
+	
+	float abs_determinate = determinate;
+	if (determinate < 0)
+	{
+		abs_determinate = -1 * determinate;
+	}
+	std::cout << "abs_Det" << abs_determinate << std::endl;
+	if (abs_determinate < 0.015)
 	{
 		std::cout << "There is no Inverse Jacobian" << std::endl;
-		break;
+		res.dq1 = 0;
+		res.dq2 = 0;
+		res.dq3 = 0;
 	}
 	else
 	{
@@ -110,7 +119,7 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 
 	}
 
-	ROS_INFO("request: dx=%f, dy=%f, dz=%f, dax=%f, day=%f, daz=%f, q1=%f, q2=%f, q3=%f", (float)req.dx, (float)req.dy, (float)req.dz, (float)req.dax, (float)req.day, (float)req.daz, (float)req.q1, (float)req.q2, (float)req.q3);
+	ROS_INFO("request: dx=%f, dy=%f, dz=%f, q1=%f, q2=%f, q3=%f", (float)req.dx, (float)req.dy, (float)req.dz, (float)req.q1, (float)req.q2, (float)req.q3);
 	ROS_INFO("sending back response: dq1 = %f", "dq2 = %f", "dq3 = %f", (float)res.dq1, (float)res.dq2, (float)res.dq3);
 
 	return true;
