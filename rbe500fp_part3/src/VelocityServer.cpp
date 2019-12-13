@@ -16,6 +16,7 @@
 # define L2 0.2		//m
 # define L3 0.2		//m
 # define L4 0.1 	//m
+# define loop 1
 
 using namespace std;
 
@@ -51,6 +52,7 @@ void Gazebo_Listener::update_jointOne(const control_msgs::JointControllerState::
     q1 = msg->set_point;
     if (std::abs(q1) < 0.01)
         q1 = 0;
+    //cout << "updating" << endl;
 }
 void Gazebo_Listener::update_jointTwo(const control_msgs::JointControllerState::ConstPtr &msg)
 {
@@ -96,7 +98,7 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
   KinSrv.request.daz = 0;
 
   
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(loop);
     for (int i = 0; i < 3; i ++)
     {
       ros::spinOnce();
@@ -132,24 +134,35 @@ bool goTo(rbe500fp_part3::RefVel::Request &req, rbe500fp_part3::RefVel::Response
       return 1;
     }
  
-  while(ros::ok())
-  {
+    cout << "here" << endl;
+  
     std_msgs::Float64 distance1;
     std_msgs::Float64 distance2;
     std_msgs::Float64 distance3;
+
+  for (int i = 0; i < 10; i++)
+  {
+    ROS_INFO("Publishing");
+
+    
     // Publish the reference position to the Gazebo topic
   
-    distance1.data = g_listener.q1 - (messageJoint1.data * (1/30));
-    // cout << "pos 1: " << distance1.data << endl;
-    distance2.data = g_listener.q2 - (messageJoint2.data * (1/30));
-    // cout << "pos 2: " << distance2.data << endl;
-    distance3.data = g_listener.q3 - (messageJoint3.data * (1/30));
-    // cout << "pos 3: " << distance3.data << endl;
+
+    distance1.data = g_listener.q1 + (float)(messageJoint1.data * (1/loop));
+    cout << "messageJoint1.data: " << (float)(messageJoint1.data * (1/loop)) << endl;
+    cout << "q1: " << g_listener.q1 << endl;
+    cout << "pos 1: " << distance1.data << endl;
+    distance2.data = g_listener.q2 + (messageJoint2.data * (1/loop));
+  
+    //cout << "pos 2: " << distance2.data << endl;
+    distance3.data = g_listener.q3 + (messageJoint3.data * (1/loop));
+    //cout << "pos 3: " << distance3.data << endl;
+    
     command_pub_j1.publish(distance1);
     command_pub_j2.publish(distance2);
     command_pub_j3.publish(distance3);
-    ros::spinOnce();
     //Sleep for one thirtieth of a second
+    ros::spinOnce();
     loop_rate.sleep();
   }
     
