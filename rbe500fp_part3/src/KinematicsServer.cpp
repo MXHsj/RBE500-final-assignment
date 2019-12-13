@@ -50,14 +50,17 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 	float tolerence = 0.001;
  
 	// velocity joint 1
-	res.dq1 = (50*req.daz*cos(req.q2) - 255*req.dy*cos(req.q1) + 255*req.dx*sin(req.q1) + 5*req.dy*cos(req.q1 + 2*req.q2) - 5*req.dx*sin(req.q1 + 2*req.q2))/(cos(2*req.q2) - 51);
+	// res.dq1 = (50*req.daz*cos(req.q2) - 255*req.dy*cos(req.q1) + 255*req.dx*sin(req.q1) + 5*req.dy*cos(req.q1 + 2*req.q2) - 5*req.dx*sin(req.q1 + 2*req.q2))/(cos(2*req.q2) - 51);
+	res.dq1 = req.dz*sin(req.q1 + 1.57) - req.dy*cos(req.q1 + 1.57)*(L3*sin(req.q2 + req.q3)) + L2*sin(req.q2) - req.dx*cos(req.q1)*(L3*cos(req.q2 + req.q3)) + L2*cos(req.q2);
 	if (res.dq1 < tolerence)
 	{
 		res.dq1 = 0;
 	}
 
 	// velocity joint 2
-	res.dq2 = (130*req.dy*cos(req.q1) - 25*req.daz*cos(req.q2) - 25*req.daz - 130*req.dx*sin(req.q1) + 5*req.dx*cos(req.q1)*sin(req.q2) + 5*req.dy*sin(req.q1)*sin(req.q2) - 5*req.dy*cos(req.q1)*pow(cos(req.q2),2) + 5*req.dx*pow(cos(req.q2),2)*sin(req.q1) + 5*req.dx*cos(req.q1)*cos(req.q2)*sin(req.q2) + 5*req.dy*cos(req.q2)*sin(req.q1)*sin(req.q2))/(pow(cos(req.q2),2) - 26);
+	// res.dq2 = (130*req.dy*cos(req.q1) - 25*req.daz*cos(req.q2) - 25*req.daz - 130*req.dx*sin(req.q1) + 5*req.dx*cos(req.q1)*sin(req.q2) + 5*req.dy*sin(req.q1)*sin(req.q2) - 5*req.dy*cos(req.q1)*pow(cos(req.q2),2) + 5*req.dx*pow(cos(req.q2),2)*sin(req.q1) + 5*req.dx*cos(req.q1)*cos(req.q2)*sin(req.q2) + 5*req.dy*cos(req.q2)*sin(req.q1)*sin(req.q2))/(pow(cos(req.q2),2) - 26);
+	res.dq2 = - req.dz*cos(req.q1 + 1.57) - req.dy*sin(req.q1 + 1.57)*(L3*sin(req.q2 + req.q3)) + L2*sin(req.q2) - req.dx*sin(req.q1)*(L3*cos(req.q2 + req.q3)) + L2*cos(req.q2);
+ 
 	if (res.dq2 < tolerence)
 	{
 		res.dq2 = 0;
