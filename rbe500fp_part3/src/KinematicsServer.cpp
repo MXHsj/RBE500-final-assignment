@@ -48,32 +48,8 @@ bool fwdkin(rbe500fp_part3::FwdVelKin::Request &req, rbe500fp_part3::FwdVelKin::
 bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::Response &res)
 {
 	float tolerence = 0.001;
-	/*
-	// velocity joint 1
-	// res.dq1 = (50*req.daz*cos(req.q2) - 255*req.dy*cos(req.q1) + 255*req.dx*sin(req.q1) + 5*req.dy*cos(req.q1 + 2*req.q2) - 5*req.dx*sin(req.q1 + 2*req.q2))/(cos(2*req.q2) - 51);
-	res.dq1 = req.dz*sin(req.q1 + 1.57) - req.dy*cos(req.q1 + 1.57)*(L3*sin(req.q2 + req.q3)) + L2*sin(req.q2) - req.dx*cos(req.q1)*(L3*cos(req.q2 + req.q3)) + L2*cos(req.q2);
-	if (res.dq1 < tolerence)
-	{
-		res.dq1 = 0;
-	}
-
-	// velocity joint 2
-	// res.dq2 = (130*req.dy*cos(req.q1) - 25*req.daz*cos(req.q2) - 25*req.daz - 130*req.dx*sin(req.q1) + 5*req.dx*cos(req.q1)*sin(req.q2) + 5*req.dy*sin(req.q1)*sin(req.q2) - 5*req.dy*cos(req.q1)*pow(cos(req.q2),2) + 5*req.dx*pow(cos(req.q2),2)*sin(req.q1) + 5*req.dx*cos(req.q1)*cos(req.q2)*sin(req.q2) + 5*req.dy*cos(req.q2)*sin(req.q1)*sin(req.q2))/(pow(cos(req.q2),2) - 26);
-	res.dq2 = - req.dz*cos(req.q1 + 1.57) - req.dy*sin(req.q1 + 1.57)*(L3*sin(req.q2 + req.q3)) + L2*sin(req.q2) - req.dx*sin(req.q1)*(L3*cos(req.q2 + req.q3)) + L2*cos(req.q2);
- 
-	if (res.dq2 < tolerence)
-	{
-		res.dq2 = 0;
-	}
-
-	// velocity joint 3
-	res.dq3 = req.dz;
-	if (res.dq3 < tolerence)
-	{
-		res.dq3 = 0;
-	}
-	*/
-
+	
+	// The Jacobian of the SCARA Robot
 	float a = (-L1*sin(req.q1))-(L2*sin(req.q1 + req.q2));
 	float b = -L2*sin(req.q1 + req.q2);
 	float c = 0;
@@ -84,15 +60,17 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 	float h = 0;
 	float i = -1;
 
-
+	// Calculate the determinate of the Robot
 	float determinate = (a*((e*i)-(f*h))) - (b*((d*i)-(f*g))) + (c*((d*h)-(e*g)));
 
 	if (determinate == 0)
 	{
-		std::cout << "There is no inverse" << std::endl;
+		std::cout << "There is no Inverse Jacobian" << std::endl;
+		break;
 	}
 	else
 	{
+		//Transpose the Jacobian
 		float at = (-L1*sin(req.q1))-(L2*sin(req.q1 + req.q2)); 
 		float bt = (L1*cos(req.q1)) + (L2*cos(req.q1+req.q2));
 		float ct = 0;											
@@ -103,6 +81,7 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 		float ht = 0;
 		float it = -1;											
 
+		//Calculate the Adjugate
 		float adj_11 = (et*it) - (ft*ht);
 		float adj_12 = -((dt*it) - (ft*gt));
 		float adj_13 = (dt*ht) - (et*gt);
@@ -113,6 +92,7 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 		float adj_32 = -((at*ft) - (ct*dt));
 		float adj_33 = (at*et) - (bt*dt);
 
+		//Divide by the determinate (don't need to divide when the entry is 0)
 		adj_11 = adj_11 / determinate;
 		adj_12 = adj_12 / determinate;
 		adj_13 = adj_13;
@@ -123,19 +103,15 @@ bool invkin(rbe500fp_part3::InvVelKin::Request &req, rbe500fp_part3::InvVelKin::
 		adj_32 = adj_32;
 		adj_33 = adj_33 / determinate;
 		
+		// Multiply by the requested velocities and return
 		res.dq1 = (adj_11*req.dx) + (adj_12*req.dy) + (adj_13* req.dz);
 		res.dq2 = (adj_21*req.dx) + (adj_22*req.dy) + (adj_23* req.dz);
 		res.dq3 = (adj_31*req.dx) + (adj_32*req.dy) + (adj_33* req.dz);
 
 	}
 
-
 	ROS_INFO("request: dx=%f, dy=%f, dz=%f, dax=%f, day=%f, daz=%f, q1=%f, q2=%f, q3=%f", (float)req.dx, (float)req.dy, (float)req.dz, (float)req.dax, (float)req.day, (float)req.daz, (float)req.q1, (float)req.q2, (float)req.q3);
 	ROS_INFO("sending back response: dq1 = %f", "dq2 = %f", "dq3 = %f", (float)res.dq1, (float)res.dq2, (float)res.dq3);
-
-	std::cout << (float)res.dq1 << "\t";
-	std::cout << (float)res.dq2 << "\t";
-	std::cout << (float)res.dq3 << "\t";
 
 	return true;
 }
